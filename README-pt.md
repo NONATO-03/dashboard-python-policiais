@@ -1,3 +1,7 @@
+<div align="right">
+    <a href="./README.md">🇧🇷 Read in English</a>
+</div>
+
 <div align="center">
     <h1>Dashboard de Análise de Incidentes Policiais</h1>
 </div>
@@ -131,3 +135,4 @@ Este projeto foi construído com as seguintes tecnologias:
 Desenvolvido com ❤️ por **Vitor Nonato Nascimento**.
 
 -   **GitHub:** [https://github.com/NONATO-03](https://github.com/NONATO-03)
+
