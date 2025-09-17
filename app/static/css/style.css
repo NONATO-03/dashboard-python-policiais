@@ -1,0 +1,367 @@
+/* ESTILOS GERAIS */
+/* Estilos basicos para o corpo da pagina, definindo fonte, cor de fundo, etc */
+/* É uma boa pratica definir esses padroes aqui para manter a consistencia. */
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
+    line-height: 1.6;
+    background-color: #f4f4f9;
+    color: #333;
+    margin: 0;
+}
+/* O container principal que centraliza o conteudo na pagina */
+.container {
+    max-width: 1200px;
+    margin: 20px auto;
+    padding: 0 20px;
+}
+/* Estilo do cabeçalho (header) e rodapé (footer). */
+header {
+    background-color: #2c3e50;
+    color: #ecf0f1;
+    padding: 1rem 0;
+    text-align: center;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+header h1 { margin: 0; }
+footer {
+    text-align: center;
+    margin-top: 40px;
+    padding: 20px 0;
+    color: #777;
+    border-top: 1px solid #ddd;
+}
+/* Uma linha horizontal simples para separar seçoes. */
+hr {
+    border: 0;
+    height: 1px;
+    background: #ddd;
+    margin: 30px 0;
+}
+/* ANIMAÇÔES */
+/* Animaçao 'float' que faz os elementos flutuarem suavemente pra cima e pra baixo */
+/* Usada nos cards da pagina inicial para dar um toque dinamico. */
+@keyframes float {
+    0% { transform: translateY(0px); }
+    50% { transform: translateY(-8px); }
+    100% { transform: translateY(0px); }
+}
+
+/* PÁGINA INICIAL - CARDS
+/* Estilos para os cartoes de navegaçao da pagina inicial */
+
+/* Container que alinha os cards lado a lado. */
+.card-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 40px;
+    margin-top: 50px;
+    flex-wrap: wrap;
+}
+/* Estilo individual de cada card. */
+.card {
+    background: white;
+    border-radius: 10px;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    width: 300px;
+    height: 400px;
+    text-align: center;
+    text-decoration: none;
+    color: inherit;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding: 20px;
+    animation: float 6s ease-in-out infinite; /* Aplica a animaçao de flutuar. */
+    transition: transform 0.3s ease, box-shadow 0.3s ease; /* Transiçao suave para o efeito hover. */
+}
+/* Efeito quando o mouse passa por cima do card: ele cresce um pouco. */
+.card:hover {
+    transform: scale(1.05) translateY(-10px);
+    box-shadow: 0 8px 16px rgba(0,0,0,0.2);
+    animation-play-state: paused; /* Pausa a animaçao de flutuar no hover. */
+}
+.card h2 {
+    color: #2c3e50;
+    font-size: 24px;
+    margin-bottom: 10px;
+}
+.card p {
+    font-size: 16px;
+    color: #555;
+}
+
+/* PÁGINA DE BUSCA E TABELA*/
+/* Estilos para o formulario de busca e a tabela de resultados */
+
+.search-container {
+    background: #fff;
+    padding: 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+.search-form {
+    display: flex;
+    gap: 10px;
+    margin-bottom: 20px;
+}
+.search-form input[type="text"] {
+    flex-grow: 1;
+    padding: 10px;
+    font-size: 16px;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+}
+/* Estilo do botao de busca, ja com as propriedades para alinhar o icone de lupa. */
+.search-form button {
+    padding: 10px 20px;
+    font-size: 16px;
+    background-color: #3498db;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: background-color 0.3s;
+    display: flex; 
+    align-items: center;
+    gap: 5px; 
+}
+.search-form button:hover { background-color: #2980b9; }
+
+/* Tabela de resultados da busca */
+.results-table-container { overflow-x: auto; } /* Garante que a tabela seja rolável em telas pequenas. */
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 20px;
+    background-color: #fff;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+th, td {
+    padding: 12px 15px;
+    text-align: left;
+    border-bottom: 1px solid #ddd;
+}
+thead th {
+    background-color: #ecf0f1;
+    color: #34495e;
+    font-weight: bold;
+}
+/* Link para voltar para a pagina inicial */
+.back-link { margin-top: 20px; }
+.back-link a {
+    text-decoration: none;
+    color: #3498db;
+    font-weight: bold;
+}
+
+/* PÁGINA DE GRÁFICOS (DASHBOARD */
+/* Estilos especificos para a pagina principal do dashboard. */
+
+/* Cabeçalho do dashboard, onde fica o filtro de data */
+.dashboard-header {
+    background-color: #fff;
+    padding: 15px 20px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    margin-bottom: 20px;
+    display: flex;
+    justify-content: flex-end;
+    align-items: center;
+    flex-wrap: wrap;
+    gap: 15px;
+}
+/* Formulario do filtro de data. */
+.date-filter-form {
+    display: flex;
+    gap: 15px;
+    align-items: center;
+    flex-wrap: wrap;
+}
+.date-filter-form label { font-weight: bold; color: #555; }
+.date-filter-form input[type="date"],
+.date-filter-form button,
+.date-filter-form .clear-filter {
+    padding: 8px 12px;
+    font-size: 14px;
+    border-radius: 4px;
+    border: 1px solid #ccc;
+}
+.date-filter-form button {
+    background-color: #3498db;
+    color: white;
+    border-color: #3498db;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+.date-filter-form button:hover { background-color: #2980b9; }
+.date-filter-form .clear-filter {
+    background-color: #e74c3c;
+    color: white;
+    text-decoration: none;
+    border-color: #e74c3c;
+    transition: background-color 0.3s;
+}
+.date-filter-form .clear-filter:hover { background-color: #c0392b; }
+
+/* Grid principal do dashboard, que organiza o mapa e os cards de stats. */
+.main-dashboard-grid {
+    display: grid;
+    grid-template-columns: 2fr 1fr; /* Coluna da esquerda maior que a da direita. */
+    gap: 20px;
+    margin-bottom: 20px;
+}
+.left-column, .right-column {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+}
+
+/* Estilos dos cards de estatisticas e do mapa. */
+.stats-card {
+    background: #fff;
+    border-radius: 10px;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.08);
+    padding: 24px 28px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+}
+/* Estilo especifico para o card do mapa, ajustando tamanho e espaçamento */
+.stats-card-map {
+    max-width: 480px;
+    width: 100%;
+    margin: 0 auto;
+    height: 520px; 
+    padding: 15px 10px 40px 10px; 
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: flex-start;
+    box-sizing: border-box;
+    background: #fff;
+    margin-left: -5px;
+}
+.stats-card-map .stats-title {
+    margin-bottom: 10px;
+    font-family: inherit;
+    font-size: 1.2rem;
+    color: #34495e;
+    font-weight: 600;
+    text-align: center;
+}
+.map-buttons-container {
+    display: flex;
+    gap: 10px;
+    justify-content: center;
+    margin-top: 15px;
+}
+.full-width-card {
+    width: 100%;
+}
+
+/* Card horizontal para o numero total de ocorrencias. */
+.stats-card-total-horizontal {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    background: #f8f8f8;
+    border-radius: 8px;
+    box-shadow: 0 1px 4px rgba(52,152,219,0.08);
+    padding: 8px 18px;
+    height: 50px; 
+    font-size: 1.1rem;
+}
+.stats-card-total-horizontal .stats-title {
+    font-size: 1rem;
+    color: #555;
+    font-weight: 500;
+    margin-bottom: 0;
+}
+.stats-card-total-horizontal .stats-value {
+    font-size: 1.5rem;
+    font-weight: bold;
+    color: #222;
+    margin-left: 6px;
+}
+
+/* Estilo geral para os containers dos graficos. */
+/* Define um padrao de altura e aparencia para todos os graficos */
+.chart-container {
+    background-color: #fff;
+    padding: 15px;
+    border-radius: 8px;
+    box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: 260px;
+    min-height: 180px;
+    max-height: 320px;
+    position: relative;
+}
+.chart-container h3 {
+    text-align: center;
+    margin-top: 0;
+    margin-bottom: 15px;
+    color: #34495e;
+    font-size: 1.1rem;
+    font-weight: 600;
+}
+
+/* Classes para tamanhos especificos de graficos, dando mais flexibilidade */
+.chart-container.compact-bar-chart {
+    height: 180px;
+}
+.chart-container.large-bar-chart {
+    height: 260px;
+}
+.chart-container.pie-chart-small {
+    height: 180px;
+}
+/* O !important e usado para garantir que o tamanho do canvas se ajuste bem ao container. */
+.chart-container canvas {
+    width: 90% !important;
+    height: 90% !important;
+    max-height: 100%;
+    display: block;
+}
+
+/* Grids para organizar os graficos na parte de baixo da pagina */
+.bottom-charts-grid {
+    display: flex;
+    flex-direction: column;
+    gap: 20px;
+    margin-top: 20px;
+}
+.bottom-two-charts-row {
+    display: flex;
+    gap: 20px;
+}
+.pie-charts-grid {
+    display: flex;
+    gap: 30px;
+    margin-top: 30px;
+    justify-content: center;
+}
+/* Estilo especifico para os graficos de pizza maiores. */
+.chart-container.pie-chart-large {
+    height: 320px;
+    width: 340px;
+    min-width: 300px;
+    max-width: 400px;
+}
+.chart-container.pie-chart-large canvas {
+    width: 90% !important;
+    height: 90% !important;
+    max-height: 100%;
+    display: block;
+}
+
+/* Deixa o fundo do mapa transparente. */
+.leaflet-container {
+    background: none !important;
+}

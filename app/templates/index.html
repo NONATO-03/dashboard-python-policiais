@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+
+{% block header_title %}{{ texts['menu_home'] }}{% endblock %}
+
+{% block content %}
+    <h2 style="text-align:center; font-size:2.2rem; margin-top:40px; margin-bottom:30px;">
+        {{ texts['title'] }}
+    </h2>
+    <div class="card-container">
+        <a href="{{ url_for('pesquisa') }}" class="card">
+            <div class="card-content">
+                <div style="font-size: 4rem; margin-bottom: 18px;">🔍</div>
+                <h2>{{ texts['menu_search'] }}</h2>
+                <p>{{ texts['search_title'] }}</p>
+            </div>
+        </a>
+        <a href="{{ url_for('graficos') }}" class="card">
+            <div class="card-content">
+                <div style="font-size: 4rem; margin-bottom: 18px;">📊</div>
+                <h2>{{ texts['menu_charts'] }}</h2>
+                <p>{{ texts['charts_title'] }}</p>
+            </div>
+        </a>
+    </div>
+{% endblock %}

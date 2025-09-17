@@ -1,0 +1,65 @@
+{% extends "base.html" %}
+
+{% block header_title %}{{ texts['menu_search'] }}{% endblock %}
+
+{% block content %}
+    <div class="search-container">
+        <h2>{{ texts['search_title'] }}</h2>
+        <form method="POST" action="{{ url_for('pesquisa') }}" class="search-form">
+            <input type="text" name="search_query" placeholder="{{ texts['search_placeholder'] }}" value="{{ search_query }}" autofocus>
+            <button type="submit">{{ texts['search_button'] }}</button>
+        </form>
+    </div>
+
+    <hr>
+
+    <h3>{{ texts['search_results'] }}</h3>
+    {% if results %}
+        <div class="results-table-container">
+            <table>
+                <thead>
+                    <tr>
+                        {% set header_map = {
+                            'id': 'ID',
+                            'name': texts['search_name'] if 'search_name' in texts else 'Name',
+                            'date': texts['filter_start'] if 'filter_start' in texts else 'Date',
+                            'manner_of_death': texts['death_manner'],
+                            'armed': texts['armed'],
+                            'age': texts['age'],
+                            'gender': texts['gender'],
+                            'race': texts['race_bar'],
+                            'city': texts['city'],
+                            'state': texts['state'],
+                            'signs_of_mental_illness': texts['mental'],
+                            'threat_level': texts['threat_level'],
+                            'flee': texts['flee'],
+                            'body_camera': texts['body_camera']
+                        } %}
+                        {% for key in results[0].keys() %}
+                            <th>
+                                {{ header_map[key]|default(key.replace('_', ' ')|title) }}
+                            </th>
+                        {% endfor %}
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for row in results %}
+                        <tr>
+                            {% for value in row.values() %}
+                                <td>{{ value }}</td>
+                            {% endfor %}
+                        </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+    {% elif search_query %}
+        <p>{{ texts['search_no_results'] }} "<strong>{{ search_query }}</strong>".</p>
+    {% else %}
+        <p>{{ texts['search_prompt'] }}</p>
+    {% endif %}
+
+    <div class="back-link">
+        <a href="{{ url_for('home') }}">&larr; {{ texts['back_home'] }}</a>
+    </div>
+{% endblock %}

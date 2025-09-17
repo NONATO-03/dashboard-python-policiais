@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="{{ lang }}">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}{{ texts['title'] }}{% endblock %}</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <header>
+        <div style="text-align:center; font-size:2rem; font-weight:bold; padding: 1rem 0;">
+            {% block header_title %}Projeto Dashboard{% endblock %}
+        </div>
+    </header>
+    <main class="container">
+        {% block content %}{% endblock %}
+    </main>
+    <footer>
+        <p>{{ texts['footer'] }}</p>
+        <form method="get" action="{{ url_for('set_language') }}" style="margin-top:10px; display:inline;">
+            <button type="submit" name="lang" value="pt" title="Português" style="background:none; border:none; cursor:pointer; font-size:1.5em;{% if lang == 'pt' %} filter:drop-shadow(0 0 2px #3498db);{% endif %}">🇧🇷</button>
+            <button type="submit" name="lang" value="en" title="English" style="background:none; border:none; cursor:pointer; font-size:1.5em;{% if lang == 'en' %} filter:drop-shadow(0 0 2px #3498db);{% endif %}">🇺🇸</button>
+        </form>
+    </footer>
+</body>
+</html>

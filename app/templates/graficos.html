@@ -1,0 +1,287 @@
+{% extends "base.html" %}
+{% block header_title %}{{ texts['menu_charts'] }}{% endblock %}
+
+{% block content %}
+<div class="dashboard-header">
+    <form method="GET" action="{{ url_for('graficos') }}" class="date-filter-form">
+        <label for="start_date">{{ texts['filter_start'] }}</label>
+        <input type="date" id="start_date" name="start_date" value="{{ start_date }}" min="{{ min_date }}" max="{{ max_date }}">
+        <label for="end_date">{{ texts['filter_end'] }}</label>
+        <input type="date" id="end_date" name="end_date" value="{{ end_date }}" min="{{ min_date }}" max="{{ max_date }}">
+        <button type="submit">{{ texts['filter_button'] }}</button>
+        <a href="{{ url_for('graficos') }}" class="clear-filter">{{ texts['filter_clear'] }}</a>
+    </form>
+</div>
+
+<div class="main-dashboard-grid">
+    <div class="left-column">
+        <div class="stats-card-total-horizontal full-width-card">
+            <span class="stats-title">{{ texts['total_deaths'] if texts['total_deaths'] else 'Total mortos' }}</span>
+            <span class="stats-value" id="total-deaths-value">{{ total_deaths }}</span>
+        </div>
+
+        <div class="stats-card stats-card-map full-width-card">
+            <div class="stats-title">{{ texts['us_map'] if texts['us_map'] else 'Mapa dos EUA' }}</div>
+            <div id="us-map" style="width:100%; height:260px; display:flex; align-items:center; justify-content:center;">
+                <div id="leaflet-map" style="width:100%; height:240px;"></div>
+            </div>
+            <div style="font-size:0.9rem; color:#888; margin-top:6px; text-align:center;">
+                {{ texts['map_hint'] if texts['map_hint'] else 'Clique nos estados para filtrar' }}
+            </div>
+            <div class="map-buttons-container">
+                <button type="button" id="select-all-states" class="map-btn">
+                    {{ texts['select_all'] if texts['select_all'] else 'Selecionar todos' }}
+                </button>
+                <button type="button" id="deselect-all-states" class="map-btn">
+                    {{ texts['deselect_all'] if texts['deselect_all'] else 'Desmarcar todos' }}
+                </button>
+            </div>
+        </div>
+
+        <div class="chart-container large-bar-chart" style="margin-top: 32px;">
+            <h3>{{ texts['threat_level'] }}</h3>
+            <canvas id="threatLevelChart"></canvas>
+        </div>
+        <div class="chart-container large-bar-chart" style="margin-top: 24px;">
+            <h3>{{ texts['race_bar'] }}</h3>
+            <canvas id="raceBarChart"></canvas>
+        </div>
+    </div>
+
+    <div class="right-column">
+        <div class="chart-container compact-bar-chart">
+            <h3>{{ texts['flee'] }}</h3>
+            <canvas id="fleeBarChart"></canvas>
+        </div>
+        <div class="chart-container compact-bar-chart">
+            <h3>{{ texts['mental'] }}</h3>
+            <canvas id="mentalBarChart"></canvas>
+        </div>
+        <div class="chart-container large-bar-chart">
+            <h3>{{ texts['death_manner'] }}</h3>
+            <canvas id="mannerOfDeathChart"></canvas>
+        </div>
+        <div class="pie-charts-grid">
+            <div class="chart-container pie-chart-large">
+                <h3>{{ texts['gender'] }}</h3>
+                <canvas id="genderChart"></canvas>
+            </div>
+            <div class="chart-container pie-chart-large">
+                <h3>{{ texts['body_camera'] }}</h3>
+                <canvas id="bodyCameraChart"></canvas>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="back-link">
+    <a href="{{ url_for('home') }}">&larr; {{ texts['back_home'] }}</a>
+</div>
+
+<footer style="margin-top: 20px;">
+    <div id="last-occurrence-alert" style="margin: 40px auto 0 auto; text-align:center; color:#888; font-size:1rem;">
+        <span style="background:#f8f8f8; border-radius:6px; padding:6px 18px; border:1px solid #eee;">
+            {{ texts['last_occurrence'] if texts['last_occurrence'] else 'Última ocorrência registrada em:' }} <b>{{ last_date }}</b>
+        </span>
+    </div>
+</footer>
+
+<link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css" />
+<script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+<script src="https://unpkg.com/topojson-client@3"></script>
+<script src="https://cdn.jsdelivr.net/npm/chartjs-plugin-datalabels@2"></script>
+
+<script>
+    // Começa o meu codigo Javascript para controlar a interatividade da pagina
+
+    // Dicionario para mapear os codigos dos estados (FIPS) para a sigla, foi util para a logica do mapa
+    const fipsToAbbr = {
+        "01": "AL","02": "AK","04": "AZ","05": "AR","06": "CA","08": "CO","09": "CT","10": "DE","11": "DC","12": "FL","13": "GA","15": "HI","16": "ID","17": "IL","18": "IN","19": "IA","20": "KS","21": "KY","22": "LA","23": "ME","24": "MD","25": "MA","26": "MI","27": "MN","28": "MS","29": "MO","30": "MT","31": "NE","32": "NV","33": "NH","34": "NJ","35": "NM","36": "NY","37": "NC","38": "ND","39": "OH","40": "OK","41": "OR","42": "PA","44": "RI","45": "SC","46": "SD","47": "TN","48": "TX","49": "UT","50": "VT","51": "VA","53": "WA","54": "WV","55": "WI","56": "WY"
+    };
+
+    // Inicializando o mapa Leaflet. Desativei o zoom e a movimentacao para ele funcionar so como um seletor
+    var map = L.map('leaflet-map', {
+        center: [37.8, -96], // Centralizado nos EUA
+        zoom: 3,
+        zoomControl: false,
+        attributionControl: false,
+        dragging: false,
+        scrollWheelZoom: false,
+        doubleClickZoom: false,
+        boxZoom: false,
+        keyboard: false,
+        tap: false,
+        touchZoom: false
+    });
+
+    // Esse tileLayer vazio é so pra ter a base do mapa.
+    L.tileLayer('', { minZoom: 3, maxZoom: 3 }).addTo(map);
+
+    let geojsonLayer;
+    let allStates = Object.values(fipsToAbbr); // Lista com a sigla de todos os estados
+    // O 'selected_states' vem do backend (Flask), e me diz quais estados ja estao filtrados quando a pagina carrega
+    let selected = new Set({{ selected_states|tojson }});
+
+    // Buscando os dados geograficos dos estados dos EUA de um CDN
+    fetch('https://cdn.jsdelivr.net/npm/us-atlas@3/states-10m.json')
+        .then(response => response.json())
+        .then(usData => {
+            const geojson = topojson.feature(usData, usData.objects.states);
+
+            // Funçao para definir o estilo de cada estado. Se o estado estiver na lista 'selected', pinto de azul
+            function style(feature) {
+                const abbr = fipsToAbbr[feature.id];
+                return {
+                    fillColor: selected.has(abbr) ? '#3498db' : '#e1e1e1',
+                    weight: 1, opacity: 1, color: '#888', fillOpacity: 0.8
+                };
+            }
+
+            // Funcoes para o efeito de highlight quando o mouse passa por cima de um estado
+            function highlightFeature(e) {
+                var layer = e.target;
+                layer.setStyle({ weight: 2, color: '#222', fillColor: '#2980b9' });
+            }
+
+            function resetHighlight(e) {
+                geojsonLayer.resetStyle(e.target);
+            }
+
+            // Funcao que define o que acontece para cada estado no mapa (eventos de mouse)
+            function onEachFeature(feature, layer) {
+                const abbr = fipsToAbbr[feature.id];
+                layer.on({
+                    mouseover: highlightFeature,
+                    mouseout: resetHighlight,
+                    // Logica do clique
+                    click: function(e) {
+                        // Se o estado ja estava selecionado, eu removo. Se nao, eu adiciono.
+                        if (selected.has(abbr)) {
+                            selected.delete(abbr);
+                        } else {
+                            selected.add(abbr);
+                        }
+                        geojsonLayer.setStyle(style); // Re-aplico o estilo para atualizar a cor
+
+                        // A parte mais importante. quando um estado é clicado, eu atualizo a lista de estados selecionados
+                        // e recarrego a pagina com os novos parametros na URL. o backend vai ler isso e filtrar os dados.
+                        const params = new URLSearchParams(window.location.search);
+                        params.delete('states');
+                        selected.forEach(s => params.append('states', s));
+                        window.location.search = params.toString();
+                    }
+                });
+                // Mostra a sigla do estado quando passa o mouse
+                layer.bindTooltip(abbr, {permanent: false, direction: "center", className: "state-tooltip"});
+            }
+
+            // Finalmente, adiciono a camada com os estados (geojson) no mapa
+            geojsonLayer = L.geoJson(geojson, {
+                style: style,
+                onEachFeature: onEachFeature
+            }).addTo(map);
+        });
+
+    // Criei essa função genérica 'createChart' pra nao ter que repetir o codigo de criar cada grafico.
+    // Ela recebe o ID do canvas, tipo de grafico, dados e opçoes.
+    function createChart(canvasId, type, data, options = {}) {
+        const ctx = document.getElementById(canvasId).getContext('2d');
+        const defaultOptions = {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: {
+                legend: {
+                    position: type === 'pie' ? 'top' : 'bottom',
+                    labels: {
+                        // Função customizada para mostrar o valor junto com a legenda nos graficos de pizza
+                        generateLabels: function(chart) {
+                            if (type === 'pie') {
+                                const data = chart.data;
+                                return data.labels.map(function(label, i) {
+                                    const value = data.datasets[0].data[i];
+                                    const backgroundColor = data.datasets[0].backgroundColor[i];
+                                    return { text: label + ' (' + value + ')', fillStyle: backgroundColor, strokeStyle: backgroundColor, index: i };
+                                });
+                            } else {
+                                // Para outros tipos de grafico, usa a legenda padrao
+                                return Chart.defaults.plugins.legend.labels.generateLabels(chart);
+                            }
+                        }
+                    }
+                }
+            },
+            scales: {}
+        };
+        
+        // Adiciono e configuro os eixos para os graficos de barra
+        if (type === 'bar') {
+            defaultOptions.scales = {
+                x: { beginAtZero: true, ticks: { color: '#666' }, grid: { display: false } },
+                y: { ticks: { color: '#666' }, grid: { color: '#e0e0e0' } }
+            };
+            // Se for barra horizontal, preciso inverter a configuracao dos eixos X e Y
+            if (options.indexAxis === 'y') {
+                defaultOptions.scales = {
+                    x: { beginAtZero: true, ticks: { color: '#666' }, grid: { color: '#e0e0e0' } },
+                    y: { ticks: { color: '#666' }, grid: { display: false } }
+                };
+            }
+        }
+
+        // Configurações do plugin datalabels para mostrar os valores nas barras
+        let plugins = [];
+        if (type === 'bar') {
+            const dataLabelsConfig = {
+                anchor: 'end',
+                align: options.indexAxis === 'y' ? 'right' : 'top',
+                color: '#222',
+                font: { weight: 'bold' },
+                formatter: function(value) { return value; }
+            };
+            defaultOptions.plugins.datalabels = dataLabelsConfig;
+            plugins.push(ChartDataLabels);
+
+        }
+
+        // Cria o novo grafico
+        new Chart(ctx, {
+            type: type,
+            data: data,
+            options: { ...defaultOptions, ...options },
+            plugins: plugins
+        });
+    }
+
+    // Todo o codigo aqui dentro só roda depois que a pagina HTML foi completamente carregada
+    document.addEventListener('DOMContentLoaded', function() {
+        // Logica para os botoes de selecionar/desmarcar todos os estados
+        const btnSelect = document.getElementById('select-all-states');
+        const btnDeselect = document.getElementById('deselect-all-states');
+        if (btnSelect) {
+            btnSelect.onclick = function() {
+                const params = new URLSearchParams(window.location.search);
+                params.delete('states');
+//                allStates.forEach(s => params.append('states', s));
+                window.location.search = params.toString();
+            }
+        }
+        if (btnDeselect) {
+            btnDeselect.onclick = function() {
+                const params = new URLSearchParams(window.location.search);
+                params.delete('states');
+                window.location.search = params.toString();
+            }
+        }
+
+        // Finalmente, aqui eu chamo a minha função para criar cada grafico.
+        // O `|tojson` é um filtro do Flask/Jinja2 que converte um objeto Python em um JSON valido para o Javascript ler
+        createChart('mannerOfDeathChart', 'bar', {{ chart_data.manner_of_death|tojson }}, { indexAxis: 'y' });
+        createChart('genderChart', 'pie', {{ chart_data.gender|tojson }});
+        createChart('bodyCameraChart', 'pie', {{ chart_data.body_camera|tojson }});
+        createChart('threatLevelChart', 'bar', {{ chart_data.threat_level|tojson }});
+        createChart('raceBarChart', 'bar', {{ chart_data.race_bar|tojson }});
+        createChart('fleeBarChart', 'bar', {{ chart_data.flee|tojson }}, { indexAxis: 'y' });
+        createChart('mentalBarChart', 'bar', {{ chart_data.signs_of_mental_illness|tojson }}, { indexAxis: 'y' });
+    });
+</script>
+{% endblock %}
