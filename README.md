@@ -1,5 +1,5 @@
 <div align="right">
-    <a href="./README-pt.md">🇧🇷 Read in Portuguese-Brazil</a>
+    <a href="./README-pt.md">🇧🇷 Ler em Portuguese-Brazil</a>
 </div>
 
 <div align="center">
@@ -135,3 +135,4 @@ This project was built with the following technologies:
 Developed with ❤️ by **Vitor Nonato Nascimento**.
 
 -   **GitHub:** [https://github.com/NONATO-03](https://github.com/NONATO-03)
+
