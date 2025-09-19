@@ -3,11 +3,11 @@
 </div>
 
 <div align="center">
-    <h1>Police Incident Analysis Dashboard</h1>
+    <h1>(deploy-render branch)Police Incident Analysis Dashboard</h1>
 </div>
 
 <p align="center">
-  An interactive web application developed with Python, Flask, and Pandas for the quantitative analysis of incidents involving police forces in the US.
+ An interactive web application made with Python, Flask, and Pandas for the quantitative analysis of incidents involving police forces in the US.
   <br />
   <a href="#key-features"><strong>Explore the Features »</strong></a>
   <br />
@@ -15,6 +15,9 @@
 </p>
 
 ---
+## deploy-render branch
+
+This branch is being used to deploy the repository in render
 
 ## About the Project
 
@@ -97,7 +100,7 @@ This project was built with the following technologies:
 
 #### Prerequisites
 
--   Python 3.x installed on your system
+-   Python 3.x installed on your system(i've used 3.12)
 -   `pip` (Python package manager)
 
 #### Installation & Setup
@@ -117,7 +120,7 @@ This project was built with the following technologies:
     .\venv\Scripts\activate
 
     # Linux / macOS
-    python3 -m venv venv
+    python3.12 -m venv venv
     source venv/bin/activate
     ```
 4.  **Install the dependencies:**
