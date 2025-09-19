@@ -3,7 +3,7 @@
 
 # Importando as bibliotecas que eu preciso. Pandas é a principal para manipular os dados
 import pandas as pd
-from matplotlib import cm
+from matplotlib import colormaps
 import numpy as np
 
 # FUNÇÕES AUXILIARES DE CORES 
@@ -12,7 +12,7 @@ import numpy as np
 # Eu pego um 'colormap' do Matplotlib e gero uma lista de cores em formato RGBA que o Chart.js entende.
 def get_colors(n, colormap_name='viridis'):
     """Gera uma lista de N cores RGBA a partir de um colormap do Matplotlib."""
-    colormap = cm.get_cmap(colormap_name)
+    colormap = colormaps.get(colormap_name)
     colors = colormap(np.linspace(0.2, 0.8, n))
     return [f'rgba({int(r*255)}, {int(g*255)}, {int(b*255)}, 0.75)' for r, g, b, a in colors]
 
